@@ -6,7 +6,7 @@ export default [
     price: "",
     year: "",
     type: "Cold",
-    img: "",
+    img: "..images\Guns\Cold\Combat-Knife.png",
     amount: 10,
   },
   {
