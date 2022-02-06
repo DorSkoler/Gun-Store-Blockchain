@@ -6,7 +6,18 @@ import { contractABI, contractAddressABI } from "../utils_contract/details";
 export const TransactionContext = React.createContext();
 
 const { ethereum } = window;
+const createContractEth = () =>{
+   // new ethereum contract with the ABI and details of signer by the provider
+   const provider = new ethers.providers.Web3Provider(ethereum);
+   const signer = provider.getSigner();
+   const tsxContract = new ethers.Contract(
+     contractAddressABI,
+     contractABI,
+     signer
+   );
 
+   return tsxContract;
+}
 export const TransactionProvider = ({ children }) => {
   // state for wallet account
   const [currentAccount, setCurrentAccount] = useState("");
@@ -17,17 +28,44 @@ export const TransactionProvider = ({ children }) => {
     weapon: "",
     certification: "",
   });
-  const [transactions, setTransactions] = useState([]);
+  const [accountTransactions, setTransactions] = useState([]);
 
+  const getAccountTransactions = async () =>{
+    try {
+        if(ethereum){
+          const tsxContract = createContractEth();
+          const transactions = await tsxContract.getTransactions();
+          console.log(transactions);
 
+          const newTsxData = transactions.map((ts) =>({
+            addressTo: ts.reciever,
+            addressFrom: ts.sender,
+            timestamp: new Date(ts.timestamp,toNumber()*1000).toLocaleString(),
+            weapon: ts.weapon,
+            //WEI to ETH 10^18
+            amount: parseInt(ts.amount._hex) /(10**18)
+
+          }))
+          console.log(newTsxData);
+          setTransactions(newTsxData)
+        }
+        else{
+            console.log("Etheruem problem, try again");
+        }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   //handle user accounts and if accounts has changed
   const checkIfWalletConnected = async () => {
     try {
       if (!ethereum) return alert("Please connect to MetaMask.");
       const accounts = await ethereum.request({ method: "eth_accounts" });
       if (accounts.length) {
+        //set the account to be our main account(0)
         setCurrentAccount(accounts[0]);
-        //need to add the transactions of the account
+        //setting the account transactions so we can show his data as the current state.
+        getAccountTransactions()
       } else {
         console.log(accounts);
       }
@@ -67,18 +105,12 @@ export const TransactionProvider = ({ children }) => {
       console.log(userInputData);
 
       // new ethereum contract with the ABI and details of signer by the provider
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-      const TsxContract = new ethers.Contract(
-        contractAddressABI,
-        contractABI,
-        signer
-      );
+      const tsxContract = createContractEth()
 
       console.log({
         provider,
         signer,
-        TsxContract,
+        tsxContract,
       });
 
       //ethereum request for sending the new transaction with metamask
@@ -119,6 +151,7 @@ export const TransactionProvider = ({ children }) => {
         connectWallet,
         currentAccount,
         userInputData,
+        accountTransactions,
         handleChange,
         handleNewTransaction,
       }}

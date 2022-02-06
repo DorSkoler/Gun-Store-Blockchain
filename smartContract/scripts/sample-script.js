@@ -19,7 +19,7 @@ async function main() {
 
   await transactions.deployed();
 
-  console.log("Trxs deployed to:", transactions.address);
+  console.log("Transactions deployed to:", transactions.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

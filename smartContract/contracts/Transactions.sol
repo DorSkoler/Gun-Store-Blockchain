@@ -22,7 +22,7 @@ contract Transactions {
         emit Transfer(msg.sender, receiver, amount, block.timestamp, weapon);
     }
 
-    function getAllTransactions() public view returns (Ts[] memory) {
+    function getTransactions() public view returns (Ts[] memory) {
         return transactions;
 
     }

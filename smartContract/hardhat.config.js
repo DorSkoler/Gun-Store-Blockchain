@@ -22,6 +22,7 @@ module.exports = {
   networks:{
     ropsten:{
       url: 'https://eth-ropsten.alchemyapi.io/v2/svzS6xIIPxkq0T1holdy1gcFsrNiUYXL',
+      //this key is the metamask account private key for that address
       accounts: ['c7ee49f17bf50a4e2c0348b3ff7e2cac80af780cd58ea746a4e4c25fc9bc5b09']
     }
   }
