@@ -114,12 +114,14 @@ export const TransactionProvider = ({ children }) => {
       weapon:selectedWeapon,
       price:weaponPrice
     })
+
   }
   const handleNewTransaction = async (flag) => {
     try {
       if (!ethereum) return alert("Please connect to MetaMask.");
 
       console.log(userInputData);
+      console.log(selectedWeaponShop);
 
       // new ethereum contract with the ABI and details of signer by the provider
       const tsxContract = createContractEth()
@@ -135,7 +137,7 @@ export const TransactionProvider = ({ children }) => {
             to: flag ? gunStoreAddress : userInputData.addressTo,
             //The value transferred for the transaction in WEI.
             //Parse the ether string representation of ether into a number instance of the amount of wei.
-            value: flag ? ethers.utils.parseEther("0.00001")._hex :ethers.utils.parseEther(userInputData.amount)._hex,
+            value: flag ? ethers.utils.parseEther(selectedWeaponShop.price)._hex :ethers.utils.parseEther(userInputData.amount)._hex,
           },
         ],
       });
@@ -143,8 +145,8 @@ export const TransactionProvider = ({ children }) => {
       //adding the new transaction to the blockchain with the solidity contract
       const tsHash = await tsxContract.addToBlockchain(
         flag ? gunStoreAddress: userInputData.addressTo,
-        flag ? ethers.utils.parseEther("0.00001")._hex : ethers.utils.parseEther(userInputData.amount)._hex,
-        flag ? "test" : userInputData.weapon,
+        flag ? ethers.utils.parseEther(selectedWeaponShop.price)._hex : ethers.utils.parseEther(userInputData.amount)._hex,
+        flag ? selectedWeaponShop.weapon : userInputData.weapon,
       );
       // ^^^^^ NEED TO SEE HOW WE PASS PARAMS TO ADD BLOCKCHAIN ^^^^^^^^^
       

@@ -7,13 +7,15 @@ import {FaEthereum} from 'react-icons/fa';
 
 export const WeaponCard = ({price,weapon,url}) => {
 
-  const {handleNewTransaction,selectedWeaponShop,handleSelectedWeapon} = useContext(TransactionContext)
+  const {handleSelectedWeapon,selectedWeaponShop,handleNewTransaction} = useContext(TransactionContext)
 
-  const handleBuy = (w) => {
-    console.log(w);
-    // calling new transaction function with the input data on the transaction context component.  
+  const handleBuy = (weapon,price) => {
+    handleSelectedWeapon(weapon,price)
+    // calling new transaction function with the input data on the transaction context component. 
+    console.log("handle buy");
+    console.log(selectedWeaponShop);
     handleNewTransaction(true);
-
+ 
   };
 
   return (
@@ -41,7 +43,7 @@ export const WeaponCard = ({price,weapon,url}) => {
           alt={"weapon"}
           className="w-25 h-50 2xl:h-96 rounded-md shadow-lg"
         />
-        <div className="flex cursor-pointer bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl" onClick={()=>handleSelectedWeapon(weapon,price)}>
+        <div className="flex cursor-pointer bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl" onClick={()=>handleBuy(weapon,price)}>
           <p className="text-left text-[#37c7da] font-bold">{price}<FaEthereum/></p>
 
         </div>
