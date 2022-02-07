@@ -34,6 +34,10 @@ export const TransactionProvider = ({ children }) => {
     weapon: "",
     certification: "",
   });
+  const [selectedWeaponShop,setSelectedWeaponsShop] = useState ({
+    weapon:"",
+    price:"",
+  })
   const [accountTransactions, setTransactions] = useState([]);
 
   const getAccountTransactions = async () =>{
@@ -104,6 +108,13 @@ export const TransactionProvider = ({ children }) => {
       [inputType]: e.target.value,
     }));
   };
+  const handleSelectedWeapon = (selectedWeapon,weaponPrice) =>{
+    console.log(selectedWeapon,weaponPrice);
+    setSelectedWeaponsShop({
+      weapon:selectedWeapon,
+      price:weaponPrice
+    })
+  }
   const handleNewTransaction = async (flag) => {
     try {
       if (!ethereum) return alert("Please connect to MetaMask.");
@@ -154,6 +165,8 @@ export const TransactionProvider = ({ children }) => {
         connectWallet,
         currentAccount,
         userInputData,
+        selectedWeaponShop,
+        handleSelectedWeapon,
         accountTransactions,
         handleChange,
         handleNewTransaction,

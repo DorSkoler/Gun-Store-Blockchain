@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext";
-import {Card} from './Card'
+import {TransactionCard} from './TransactionCard'
 
 import gun from '../images/Guns/Cold/Combat-Knife.png'
 
@@ -16,7 +16,7 @@ const Transactions = () => {
 
       <div className="flex flex-wrap justify-center items-center mt-10">
           {[...weaponsData].map((transaction, i) => (
-            <Card key={i} weapon={transaction.name} amount={"5"} addressFrom={"Store"} url={gun} addressTo={"shahaf"}/>
+            <TransactionCard key={i} weapon={transaction.name} amount={"5"} addressFrom={"Store"} url={gun} addressTo={"shahaf"}/>
             ))}
             </div>
       </div>

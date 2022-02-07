@@ -2,7 +2,7 @@ import React,{useState} from 'react';
 import { weaponsSideBarData } from '../weapons/weaponsNavBarData';
 import {Link} from 'react-router-dom'
 import weaponsData from '../weapons/weaponsHardCoded'
-import { Card } from '../components/Card';
+import { WeaponCard } from '../components/WeaponCard';
 import gun from '../images/Guns/Heavy/HK-G36.png'
 
 function Store() {
@@ -24,7 +24,7 @@ function Store() {
       </div>
       <div className="flex flex-wrap justify-center items-center mt-10">
           {weaponsData.filter(data => data.type === selectedWeaponType).map((weapon,index) =>(
-            <Card key={index} weapon={weapon.name} amount={"5"} addressFrom={"Store"} url={"../images/Guns/Cold/Pocket-Knife.png"} addressTo={"test"}/>
+            <WeaponCard key={index} weapon={weapon.name} price={weapon.price} addressFrom={"Store"} url={weapon.img} addressTo={"test"}/>
           ))}
 
       </div>

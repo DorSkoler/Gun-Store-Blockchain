@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext";
-export const Card = ({addressFrom,addressTo,amount,weapon,url}) => {
+export const TransactionCard = ({addressFrom,addressTo,amount,weapon,url}) => {
 
   const {handleNewTransaction} = useContext(TransactionContext)
 
@@ -39,9 +39,9 @@ export const Card = ({addressFrom,addressTo,amount,weapon,url}) => {
         </div>
         <img
           
-          src={require(url)}
+          src={url}
           alt={"weapon"}
-          className="w-full h-50 2xl:h-96 rounded-md shadow-lg"
+          className="w-25 h-50 2xl:h-96 rounded-md shadow-lg"
         />
         <div className="cursor-pointer bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl" onClick={()=>handleBuy(weapon)}>
           <p className="text-[#37c7da] font-bold">Buy</p>
