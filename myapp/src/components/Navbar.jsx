@@ -9,11 +9,14 @@ const NavBarItem = ({title,classprops}) => (
 )
 
 const Navbar = () => {
-  const {currentAccount} = useContext(TransactionContext)
+  const {currentAccount,connectWallet} = useContext(TransactionContext)
+  const shortAddress = `${currentAccount.slice(0, 5)}…${currentAccount.slice(currentAccount.length - 4)}`
   return (
     <nav className="w-full flex md:justify-center justify-between items-center p-4">
       <div className="md:flex-[0.5] flex-initial justify-center items-center">
+        <Link to ="/home">
         <img src={logo} alt="logo" className="w-41 h-15 cursor-pointer" />
+        </Link>
       </div>
       <ul className="text-white md:flex hidden list-none flex-row justify-between items-center flex-initial">
       {["Transactions","Weapons","Store"].map((item,index) =>(
@@ -21,9 +24,8 @@ const Navbar = () => {
             <NavBarItem key={item+index} title={item}/>
           </Link>
       ))}
-        <li className='bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]'>
-        {currentAccount ? `${currentAccount.slice(0, 5)}…${currentAccount.slice(currentAccount.length - 4)}`
- : "Login"}
+        <li className='bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]' onClick={connectWallet}>
+        {currentAccount ? shortAddress : "Login"}
         </li>
     </ul>
 

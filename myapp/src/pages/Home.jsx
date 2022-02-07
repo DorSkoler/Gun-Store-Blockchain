@@ -11,7 +11,7 @@ const UserInput = ({ placeholder, name, type, value, handleChange }) => (
     className="my-2 w-full rounded-sm p-2 outline-none bg-transparent text-white border-none text-sm white-glassmorphism"
   />
 );
-const Welcome = () => {
+const Home = () => {
   const {connectWallet,currentAccount,userInputData,handleChange,handleNewTransaction} = useContext(TransactionContext)
 
   //function to be called when the user clicked on the 'send now' button with the user input
@@ -72,4 +72,4 @@ const Welcome = () => {
   );
 };
 
-export default Welcome;
+export default Home;

@@ -1,7 +1,17 @@
 import React, { useContext } from "react";
+import { TransactionContext } from "../context/TransactionContext";
+export const Card = ({addressFrom,addressTo,amount,weapon,url}) => {
 
-export const TransactionCard = ({addressFrom,addressTo,amount,weapon,url}) => {
-  console.log();
+  const {handleNewTransaction} = useContext(TransactionContext)
+
+  const handleBuy = (w) => {
+    //prevent the default listener function to execute, need to check if there is an input first.
+    console.log(w);
+    // calling new transaction function with the input data on the transaction context component.  
+    handleNewTransaction(true);
+
+  };
+
   return (
     <div className="blue-glassmorphism m-4 flex flex-1
       2xl:min-w-[450px]
@@ -23,17 +33,18 @@ export const TransactionCard = ({addressFrom,addressTo,amount,weapon,url}) => {
           {weapon && (
             <>
               <br />
-              <p className="text-white text-base">Weapon: {weapon}</p>
+              <p className="text-white text-base">Type: {weapon}</p>
             </>
           )}
         </div>
         <img
-          src={url}
-          alt="weapon"
+          
+          src={require(url)}
+          alt={"weapon"}
           className="w-full h-50 2xl:h-96 rounded-md shadow-lg"
         />
-        <div className="bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl">
-          <p className="text-[#37c7da] font-bold">timestamp</p>
+        <div className="cursor-pointer bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl" onClick={()=>handleBuy(weapon)}>
+          <p className="text-[#37c7da] font-bold">Buy</p>
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ contract Transactions {
     }
 
     Ts[] transactions;
-
+    //need to check params for new transaction.
     function addToBlockchain(address payable receiver, uint amount, string memory weapon) public {
         TsxCount += 1;
         transactions.push(Ts(msg.sender, receiver, amount, block.timestamp, weapon));

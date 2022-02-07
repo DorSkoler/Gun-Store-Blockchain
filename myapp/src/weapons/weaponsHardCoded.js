@@ -6,7 +6,7 @@ export default [
     price: "",
     year: "",
     type: "Cold",
-    img: "..images\Guns\Cold\Combat-Knife.png",
+    img: "../images/Guns/Cold/Combat-Knife.png",
     amount: 10,
   },
   {
@@ -15,7 +15,7 @@ export default [
     price: "",
     year: "",
     type: "Cold",
-    img: "",
+    img: '../images/Guns/Cold/Dagger.png',
     amount: 10,
   },
   {
@@ -24,7 +24,7 @@ export default [
     price: "",
     year: "",
     type: "Cold",
-    img: "",
+    img: "../images/Guns/Cold/Pocket-Knife.png",
     amount: 10,
   },
   {
