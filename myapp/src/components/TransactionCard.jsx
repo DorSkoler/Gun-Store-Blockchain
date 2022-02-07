@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext";
-export const TransactionCard = ({addressFrom,addressTo,amount,weapon,url}) => {
+export const TransactionCard = ({addressFrom,addressTo,amount,weapon,timestamp,url,type}) => {
 
   const {handleNewTransaction} = useContext(TransactionContext)
 
@@ -29,13 +29,15 @@ export const TransactionCard = ({addressFrom,addressTo,amount,weapon,url}) => {
           <a href={`https://ropsten.etherscan.io/address/${addressTo}`} target="_blank" rel="noreferrer">
             <p className="text-white text-base">To: {addressTo}</p>
           </a>
-          <p className="text-white text-base">Amount: {amount} ETH</p>
           {weapon && (
             <>
               <br />
-              <p className="text-white text-base">Type: {weapon}</p>
+              <p className="text-white text-base">Weapon Type: {type}</p>
+              <p className="text-white text-base">Weapon Name: {weapon}</p>
+
             </>
           )}
+          <p className="text-white text-base">Price: {amount} ETH</p>
         </div>
         <img
           
@@ -43,8 +45,8 @@ export const TransactionCard = ({addressFrom,addressTo,amount,weapon,url}) => {
           alt={"weapon"}
           className="w-25 h-50 2xl:h-96 rounded-md shadow-lg"
         />
-        <div className="cursor-pointer bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl" onClick={()=>handleBuy(weapon)}>
-          <p className="text-[#37c7da] font-bold">Buy</p>
+        <div className="cursor-pointer bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl" onClick={()=>{}}>
+          <p className="text-[#37c7da] font-bold">{timestamp}</p>
         </div>
       </div>
     </div>
