@@ -5,18 +5,23 @@ let Account = Schemas.Accounts
 
 router.route('/').get((req,res)=>{
     Account.find()
-    .then(accounts => console.log(accounts))
+    .then(accounts => { res.json(accounts) })
     .catch(err => console.log(err))
 })
 
-router.route('/add').post((req,res)=>{
-    const account_name = req.body.account_name
+router.route('/add').post(async(req,res) => {
     const account_metamask_address = req.body.account_metamask_address
 
-    const newAccount = new Account({account_name,account_metamask_address})
-    newAccount
-    .save(() => console.log('added success'))
-    .catch(err => console.log(err))
+    const account = await Account.findOne({ account_metamask_address: account_metamask_address }).select("account_metamask_address").lean();
+    if (account) { 
+        res.json("User exists")
+    }
+    else {
+        const newAccount = new Account({account_metamask_address})
+        newAccount
+        .save().then(()=> { res.json(`added ${JSON.stringify(newAccount)}`) })
+        .catch((err)=>console.log(err))
+    }
 })
 
 module.exports = router

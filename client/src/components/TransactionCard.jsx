@@ -1,5 +1,10 @@
 import React, { useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext";
+
+const shortAddress = (address) => {
+  return `${address.slice(0, 5)}…${address.slice(address.length - 4)}`
+}
+
 export const TransactionCard = ({addressFrom,addressTo,amount,weapon,timestamp,url,type}) => {
 
   const {handleNewTransaction} = useContext(TransactionContext)
@@ -24,10 +29,10 @@ export const TransactionCard = ({addressFrom,addressTo,amount,weapon,timestamp,u
       <div className="flex flex-col items-center w-full mt-3">
         <div className="display-flex justify-start w-full mb-6 p-2">
           <a href={`https://ropsten.etherscan.io/address/${addressFrom}`} target="_blank" rel="noreferrer">
-            <p className="text-white text-base">From: {addressFrom}</p>
+            <p className="text-white text-base">From: {shortAddress(addressFrom)}</p>
           </a>
           <a href={`https://ropsten.etherscan.io/address/${addressTo}`} target="_blank" rel="noreferrer">
-            <p className="text-white text-base">To: {addressTo}</p>
+            <p className="text-white text-base">To: {shortAddress(addressTo)}</p>
           </a>
           {weapon && (
             <>

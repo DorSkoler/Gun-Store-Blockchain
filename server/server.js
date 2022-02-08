@@ -8,7 +8,8 @@ const app = express();
 // const Schemas = require('../models/schemas')
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
-
+app.use(cors())
+app.use(express.json())
 
 //DB connection
 mongoose.connect(process.env.DB_URI, {useNewUrlParser:true,useUnifiedTopology:true})
@@ -19,15 +20,12 @@ mongoose.connect(process.env.DB_URI, {useNewUrlParser:true,useUnifiedTopology:tr
     console.log(err);
 })
 
-const accountsRouter = require('./routes/accounts')
+const weaponsRouter = require('./routes/weapons')
 
 
-app.use('/accounts',accountsRouter)
-// app.use('/weapons',Schemas.Weapons)
+app.use('/weapons',weaponsRouter)
 
 
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
 })
-
-

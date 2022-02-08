@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-
+import axios from "axios";
 
 // dor address: 0xC77eBb0057E5534efeDBb46360D92CbDA2807B68
 // shahaf address: 0x43A0726774FCbece727A78C818fF7be9D89a8ADb
@@ -12,19 +12,19 @@ import { contractABI, contractAddressABI, gunStoreAddress } from "../utils_contr
 export const TransactionContext = React.createContext();
 
 const { ethereum } = window;
-const createContractEth = () =>{
-   // new ethereum contract with the ABI and details of signer by the provider
-   const provider = new ethers.providers.Web3Provider(ethereum);
-   const signer = provider.getSigner();
+const createContractEth = () => {
+  // new ethereum contract with the ABI and details of signer by the provider
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
 
-   const tsxContract = new ethers.Contract(
-     contractAddressABI,
-     contractABI,
-     signer
-   );   
+  const tsxContract = new ethers.Contract(
+    contractAddressABI,
+    contractABI,
+    signer
+  );
 
 
-   return tsxContract;
+  return tsxContract;
 }
 export const TransactionProvider = ({ children }) => {
   // state for wallet account
@@ -36,36 +36,36 @@ export const TransactionProvider = ({ children }) => {
     weapon: "",
     certification: "",
   });
-  
-  
+
+
   //state for the account transaction to be viewd in the transaction page when the user logged in to his wallet
   const [accountTransactions, setTransactions] = useState([]);
   //state for the account weapons to be viewd in the weapons page when the user logged in to his wallet.
-  const [accountWeapons,setAccountWeapons] = useState([]);
+  const [accountWeapons, setAccountWeapons] = useState([]);
 
-  const getAccountTransactions = async () =>{
+  const getAccountTransactions = async () => {
     try {
-        if(ethereum){
-          const tsxContract = createContractEth();
-          const transactions = await tsxContract.getTransactions();
+      if (ethereum) {
+        const tsxContract = createContractEth();
+        const transactions = await tsxContract.getTransactions();
 
-          const newTsxData = transactions.map((ts) =>({
-            addressTo: ts.receiver,
-            addressFrom: ts.sender,
-            timestamp: new Date(ts.timestamp.toNumber()*1000).toLocaleString(),
-            weapon: ts.weapon,
-            //WEI to ETH 10^18
-            amount: parseInt(ts.amount._hex) /(10**18),
-            weaponType:ts.weaponType,
-            weaponUrl:ts.weaponUrl
+        const newTsxData = transactions.map((ts) => ({
+          addressTo: ts.receiver,
+          addressFrom: ts.sender,
+          timestamp: new Date(ts.timestamp.toNumber() * 1000).toLocaleString(),
+          weapon: ts.weapon,
+          //WEI to ETH 10^18
+          amount: parseInt(ts.amount._hex) / (10 ** 18),
+          weaponType: ts.weaponType,
+          weaponUrl: ts.weaponUrl
 
-          }))
-          console.log(newTsxData);
-          setTransactions(newTsxData)
-        }
-        else{
-            console.log("Etheruem problem, try again");
-        }
+        }))
+        console.log(newTsxData);
+        setTransactions(newTsxData)
+      }
+      else {
+        console.log("Etheruem problem, try again");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -97,7 +97,7 @@ export const TransactionProvider = ({ children }) => {
         method: "eth_requestAccounts",
       });
       setCurrentAccount(accounts[0]);
-      
+
     } catch (error) {
       console.log(error);
       throw new Error("No Eth Object");
@@ -113,7 +113,7 @@ export const TransactionProvider = ({ children }) => {
       [inputType]: e.target.value,
     }));
   };
- 
+
   const handleNewTransaction = async (userWeapon) => {
     try {
       if (!ethereum) return alert("Please connect to MetaMask.");
@@ -129,21 +129,31 @@ export const TransactionProvider = ({ children }) => {
             to: userWeapon ? gunStoreAddress : userInputData.addressTo,
             //The value transferred for the transaction in WEI.
             //Parse the ether string representation of ether into a number instance of the amount of wei.
-            value: userWeapon ? ethers.utils.parseEther(userWeapon.price)._hex :ethers.utils.parseEther(userInputData.amount)._hex,
+            value: userWeapon ? ethers.utils.parseEther(userWeapon.price)._hex : ethers.utils.parseEther(userInputData.amount)._hex,
           },
         ],
       });
-    
+
       //adding the new transaction to the blockchain with the solidity contract
       const tsHash = await tsxContract.addToBlockchain(
-        userWeapon ? gunStoreAddress: userInputData.addressTo,
+        userWeapon ? gunStoreAddress : userInputData.addressTo,
         userWeapon ? ethers.utils.parseEther(userWeapon.price)._hex : ethers.utils.parseEther(userInputData.amount)._hex,
         userWeapon ? userWeapon.weapon : userInputData.weapon,
         userWeapon ? userWeapon.type : null,
         userWeapon ? userWeapon.url : null
       );
       // ^^^^^ NEED TO SEE HOW WE PASS PARAMS TO ADD BLOCKCHAIN ^^^^^^^^^
-      
+      if (userWeapon) {
+        const weaponToAdd = {
+          weapon_name: userWeapon.weapon,
+          weapon_type: userWeapon.type,
+          weapon_price: userWeapon.price,
+          weapon_url: userWeapon.url,
+          account_metamask_address: currentAccount
+        }
+        axios.post('http://localhost:4000/weapons/add', weaponToAdd)
+          .then(res => console.log(res.data))
+      }
     } catch (error) {
       console.log(error);
       throw new Error("No Eth Object");
