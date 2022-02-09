@@ -8,9 +8,10 @@ router.route('/').get((req, res) => {
         .catch(err => console.log(err))
 })
 
-router.route('/byMetamask').get((req, res) => {
+
+router.route('/byMetamask').post((req, res) => {
     Weapon.find({ account_metamask_address: req.body.account_metamask_address })
-        .then(weapons => { res.json(weapons) })
+        .then(weapons => { res.json(weapons);console.log(weapons); })
         .catch(err => console.log(err))
 })
 

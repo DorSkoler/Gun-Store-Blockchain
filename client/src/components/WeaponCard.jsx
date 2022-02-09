@@ -1,25 +1,7 @@
-import React, { useContext } from "react";
-import { TransactionContext } from "../context/TransactionContext";
+import React from "react";
 import {FaEthereum} from 'react-icons/fa';
 
-
-
-export const WeaponCard = ({price,weapon,url,type}) => {
-
-  const {handleNewTransaction} = useContext(TransactionContext)
-
-  //when user chose the weapon he wants to buy this function will create new weapon 'transaction' so the context will handle this.
-  const handleBuy = () => {
-    const userWeapon = {
-      weapon:weapon,
-      price:price,
-      url:url,
-      type:type
-    }
-    // calling new transaction function with the selected weapon transaction. 
-    handleNewTransaction(userWeapon);
- 
-  };
+export const WeaponCard = ({price,weapon,url,type,training}) => {
 
   return (
     <div className="blue-glassmorphism m-4 flex flex-1
@@ -32,13 +14,9 @@ export const WeaponCard = ({price,weapon,url,type}) => {
     >
       <div className="flex flex-col items-center w-full mt-1">
         <div className="display-flex justify-start w-full mb-2 p-2">
-          {weapon && (
-            <>
-              <br />
-              <p className="text-white text-base">Name: {weapon}</p>
-            </>
-          )}
-          <p className="text-white text-base">Price: {price} ETH</p>
+
+          <p className="text-white text-base">Name: {weapon}</p>
+          <p className="text-white text-base">Type: {type}</p>
         </div>
         <img
           

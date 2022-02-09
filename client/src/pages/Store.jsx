@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
 import { weaponsSideBarData } from '../weapons/weaponsNavBarData';
 import weaponsData from '../weapons/weaponsHardCoded'
-import { WeaponCard } from '../components/WeaponCard';
+import { WeaponCardStore } from '../components/WeaponCardStore';
 
 function Store() {
   const [selectedWeaponType,setSelectedWeaponType] = useState("Cold")
@@ -22,7 +22,7 @@ function Store() {
       </div>
       <div className="flex flex-wrap justify-center items-center mt-10">
           {weaponsData.filter(data => data.type === selectedWeaponType).map((weapon,index) =>(
-            <WeaponCard key={index} weapon={weapon.name} price={weapon.price} url={weapon.img} type={weapon.type}/>
+            <WeaponCardStore key={index} weapon={weapon.name} price={weapon.price} url={weapon.img} type={weapon.type}/>
           ))}
 
       </div>

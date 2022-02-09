@@ -60,7 +60,6 @@ export const TransactionProvider = ({ children }) => {
           weaponUrl: ts.weaponUrl
 
         }))
-        console.log(newTsxData);
         setTransactions(newTsxData)
       }
       else {
@@ -79,10 +78,12 @@ export const TransactionProvider = ({ children }) => {
         //set the account to be our main account(0)
         setCurrentAccount(accounts[0]);
         //setting the account transactions so we can show his data as the current state.
-        getAccountTransactions()
-      } else {
-        console.log(accounts);
+        getAccountTransactions();
       }
+      // NOT SURE IF NEEDED THE ELSE PART
+      // } else {
+      //   return alert("Please register to MetaMask.");
+      // }
     } catch (error) {
       console.log(error);
       throw new Error("No Eth Object");
@@ -97,12 +98,9 @@ export const TransactionProvider = ({ children }) => {
         method: "eth_requestAccounts",
       });
       setCurrentAccount(accounts[0]);
-      const account = { account_metamask_address: accounts[0]}
-      axios.get('http://localhost:4000/weapons/byMetamask', account)
-          .then(res => {
-            setAccountWeapons(res.data)
-          })
-        
+      // const account = { account_metamask_address: accounts[0]}
+      getAccountWeapons()
+
     } catch (error) {
       console.log(error);
       throw new Error("No Eth Object");
@@ -164,11 +162,19 @@ export const TransactionProvider = ({ children }) => {
       throw new Error("No Eth Object");
     }
   };
-
+  const getAccountWeapons = async()=>{
+    try {
+      const res = await axios.post('http://localhost:4000/weapons/byMetamask', {account_metamask_address:currentAccount})
+      setAccountWeapons(res.data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
   //use effect that always checking whether a wallet is connected, the pages renders for every change.
   useEffect(() => {
     checkIfWalletConnected();
-  }, []);
+    getAccountWeapons();
+  }, [currentAccount]);
 
   return (
     <TransactionContext.Provider
