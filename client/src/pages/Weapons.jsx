@@ -1,12 +1,13 @@
 import React,{useState} from 'react';
 import { weaponsSideBarData } from '../weapons/weaponsNavBarData';
-import {Link} from 'react-router-dom'
 import weaponsData from '../weapons/weaponsHardCoded'
 import { WeaponCard } from '../components/WeaponCard';
-import gun from '../images/Guns/Heavy/HK-G36.png'
+import { TransactionContext } from '../context/TransactionContext';
+
 
 function Weapons() {
   const [selectedWeaponType,setSelectedWeaponType] = useState("")
+  const {accountWeapons}= useContext(TransactionContext)
 
   const handleSelectedWeaponType = (weapon) => {
     setSelectedWeaponType(weapon);
@@ -23,8 +24,9 @@ function Weapons() {
         </ul>
       </div>
       <div className="flex flex-wrap justify-center items-center mt-10">
-          {weaponsData.filter(data => data.type === selectedWeaponType).map((weapon,index) =>(
-            <WeaponCard key={index} weapon={weapon.name} amount={"5"} addressFrom={"Store"} url={gun} addressTo={"test"}/>
+          {accountWeapons.map((weapon,index) =>(
+            <WeaponCard key={index} weapon={weapon.name} price={weapon.weapon_price}  url={weapon.weapon_url} type={weapon.weapon_type} 
+            traning={weapon.weapon_traning}/>
           ))}
 
       </div>

@@ -97,7 +97,12 @@ export const TransactionProvider = ({ children }) => {
         method: "eth_requestAccounts",
       });
       setCurrentAccount(accounts[0]);
-
+      const account = { account_metamask_address: accounts[0]}
+      axios.get('http://localhost:4000/weapons/byMetamask', account)
+          .then(res => {
+            setAccountWeapons(res.data)
+          })
+        
     } catch (error) {
       console.log(error);
       throw new Error("No Eth Object");
@@ -172,6 +177,7 @@ export const TransactionProvider = ({ children }) => {
         currentAccount,
         userInputData,
         accountTransactions,
+        accountWeapons,
         handleChange,
         handleNewTransaction,
       }}

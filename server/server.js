@@ -22,9 +22,7 @@ mongoose.connect(process.env.DB_URI, {useNewUrlParser:true,useUnifiedTopology:tr
 
 const weaponsRouter = require('./routes/weapons')
 
-
 app.use('/weapons',weaponsRouter)
-
 
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
