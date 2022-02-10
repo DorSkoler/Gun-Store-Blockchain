@@ -154,8 +154,7 @@ export const TransactionProvider = ({ children }) => {
           weapon_url: userWeapon.url,
           account_metamask_address: currentAccount
         }
-        axios.post('https://gun-store-blockchain.herokuapp.com/weapons/add', weaponToAdd)
-          .then(res => console.log(res.data))
+        await axios.post('https://gun-store-blockchain.herokuapp.com/weapons/add', weaponToAdd)
       }
     } catch (error) {
       console.log(error);

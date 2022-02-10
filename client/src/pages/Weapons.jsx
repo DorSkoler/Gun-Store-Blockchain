@@ -5,7 +5,6 @@ import { WeaponCard } from "../components/WeaponCard";
 function Weapons() {
   const [selectedWeaponType, setSelectedWeaponType] = useState("");
   const { accountWeapons } = useContext(TransactionContext);
-  console.log(accountWeapons);
   const handleSelectedWeaponType = (weapon) => {
     setSelectedWeaponType(weapon);
   };
