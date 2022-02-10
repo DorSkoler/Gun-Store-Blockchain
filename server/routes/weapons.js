@@ -51,4 +51,12 @@ router.route('/updatePrice').post(async (req, res) => {
         .then(() => { res.json("updated price") })
 })
 
+router.route('/idlePrice').post(async (req, res) => {
+    const weapon_price = req.body.weapon_price
+
+    await Weapon.findByIdAndUpdate({ _id: req.body._id },
+        { weapon_price: weapon_price })
+        .then(() => { res.json("updated idle price") })
+})
+
 module.exports = router
