@@ -154,7 +154,7 @@ export const TransactionProvider = ({ children }) => {
           weapon_url: userWeapon.url,
           account_metamask_address: currentAccount
         }
-        axios.post('http://localhost:4000/weapons/add', weaponToAdd)
+        axios.post('https://gun-store-blockchain.herokuapp.com/weapons/add', weaponToAdd)
           .then(res => console.log(res.data))
       }
     } catch (error) {
@@ -164,7 +164,7 @@ export const TransactionProvider = ({ children }) => {
   };
   const getAccountWeapons = async()=>{
     try {
-      const res = await axios.post('http://localhost:4000/weapons/byMetamask', {account_metamask_address:currentAccount})
+      const res = await axios.post('https://gun-store-blockchain.herokuapp.com/weapons/byMetamask', {account_metamask_address:currentAccount})
       setAccountWeapons(res.data)
     } catch (error) {
       console.log(error);
