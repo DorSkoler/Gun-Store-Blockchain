@@ -30,22 +30,25 @@ router.route('/add').post(async (req, res) => {
         .catch((err) => console.log(err))
 })
 
-router.route('/updateAddress').put(async (req, res) => {
+router.route('/updateAddress').post(async (req, res) => {
     const account_metamask_address = req.body.account_metamask_address
     // need to check if correct this way
     const weapon_training = { shooting_range: 0, basic_training: 0, advanced_training: 0 }
 
     await Weapon.findByIdAndUpdate({ _id: req.body._id },
         { account_metamask_address: account_metamask_address, weapon_training: weapon_training })
-    res.json("updated address")
+    .then(() => { res.json("updated address") })
 })
 
-router.route('/updatePrice').put(async (req, res) => {
+router.route('/updatePrice').post(async (req, res) => {
+    const training_index = req.body.training_index
     const weapon_price = req.body.weapon_price
+    let weapon_training = req.body.weapon_training
+    weapon_training[training_index]+= 1
 
     await Weapon.findByIdAndUpdate({ _id: req.body._id },
-        { weapon_price: weapon_price })
-    res.json("updated price")
+        { weapon_price: weapon_price, weapon_training:weapon_training })
+        .then(() => { res.json("updated price") })
 })
 
 module.exports = router

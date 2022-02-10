@@ -7,7 +7,7 @@ const weaponsSchema = new Schema ({
      timestamp:{type:Date,default: Date.now()},
      weapon_name:{type:String,required:true},
      weapon_type:{type:String,required:true},
-     weapon_training:{type:Object, required:true},
+     weapon_training:{type:Schema.Types.Mixed, required:true},
      weapon_price:{type:Number,required:true},
      weapon_url:{type:String,required:true},
 
