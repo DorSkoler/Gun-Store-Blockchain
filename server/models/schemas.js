@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 const weaponsSchema = new Schema ({
     account_metamask_address: {type:String,required:true},
-     timestamp:{type:Date,default: Date.now()},
+     timestamp:{type:Date,required:true},
      weapon_name:{type:String,required:true},
      weapon_type:{type:String,required:true},
      weapon_training:{type:Schema.Types.Mixed, required:true},
