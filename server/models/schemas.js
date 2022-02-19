@@ -10,6 +10,8 @@ const weaponsSchema = new Schema ({
      weapon_training:{type:Schema.Types.Mixed, required:true},
      weapon_price:{type:Number,required:true},
      weapon_url:{type:String,required:true},
+     weapon_for_sale:{type:Boolean,default:false},
+     last_modified:{type:Date,required:true}
 
 }, { versionKey: false })
 
