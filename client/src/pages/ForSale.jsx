@@ -1,29 +1,28 @@
 import React, { useState, useContext, useEffect } from "react";
 import { TransactionContext } from "../context/TransactionContext";
-import { WeaponCard } from "../components/WeaponCard";
+import { WeaponCardForSale } from "../components/WeaponCardForSale";
 import SideBar from "../components/SideBar";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion,AnimatePresence } from "framer-motion";
 
-function Weapons() {
+function ForSale() {
+  const [toggle, setToggle] = useState(Date.now());
   const [selectedWeaponType, setSelectedWeaponType] = useState("All");
   const [filtered, setFiltered] = useState([]);
-  const [toggle, setToggle] = useState(Date.now());
   const {
     currentAccount,
-    accountWeapons,
-    getAccountWeapons,
+    weaponsForSale,
     handleWeaponIdleTime,
+    getWeaponsForSale,
   } = useContext(TransactionContext);
 
-  //use effect to render the page each change in the account weapons
   useEffect(() => {
-    getAccountWeapons();
-  }, [accountWeapons]);
+    getWeaponsForSale();
+  }, [weaponsForSale]);
 
   useEffect(() => {
     let handle = setTimeout(() => setToggle((prevToggle) => !prevToggle), 5000);
     return () => {
-      accountWeapons.map((weapon) => {
+      weaponsForSale.map((weapon) => {
         handleWeaponIdleTime({
           _id: weapon._id,
           last_modified: weapon.last_modified,
@@ -37,32 +36,30 @@ function Weapons() {
   }, [toggle]);
 
   return (
-    <motion.div className="flex md:flex-row flex-col justify-center">
+    <motion.div className="flex md:flex-row flex-col justify-center gradient-bg-welcome">
       <div className="text-white py-12 px-8">
         <SideBar
           selected={selectedWeaponType}
           setSelectedWeaponType={setSelectedWeaponType}
-          weapons={accountWeapons}
+          weapons={weaponsForSale}
           setFiltered={setFiltered}
+          forSale={true}
         />
       </div>
       {currentAccount ? (
         <div className="flex flex-wrap justify-center items-center mt-10">
           <AnimatePresence>
             {filtered.map((weapon) => (
-              <WeaponCard
+              <WeaponCardForSale
                 timestamp={weapon.timestamp}
                 key={weapon._id}
                 id={weapon._id}
+                owner={weapon.account_metamask_address}
                 weapon={weapon.weapon_name}
                 price={weapon.weapon_price}
                 url={weapon.weapon_url}
                 type={weapon.weapon_type}
                 training={weapon.weapon_training}
-                sale={weapon.weapon_for_sale}
-                lastModified={weapon.last_modified}
-                countTraining={weapon.count_training}
-                oldPrice={weapon.old_price}
               />
             ))}
           </AnimatePresence>
@@ -70,7 +67,7 @@ function Weapons() {
       ) : (
         <div className="flex justify-center items-center flex-col text-white">
           <h1 className="py-12 px-8 font-semibold">
-            Login to Metamask to view your weapons.
+            Login to Metamask to view our weapons.
           </h1>
         </div>
       )}
@@ -78,4 +75,4 @@ function Weapons() {
   );
 }
 
-export default Weapons;
+export default ForSale;

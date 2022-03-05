@@ -1,72 +1,155 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { FaEthereum } from "react-icons/fa";
 import { Button } from "./Button";
 import { TransactionContext } from "../context/TransactionContext";
-
+import { StyledButton } from './StyledButton'
+import { VscTriangleDown, VscTriangleUp } from 'react-icons/vsc'
+import { motion } from "framer-motion";
 const dictTraining = {
   shooting_range: "Shooting Range",
   basic_training: "Basic Training",
-  advanced_training:"Advanced Training"
-}
+  advanced_training: "Advanced Training",
+};
 
-export const WeaponCard = ({ id,price, weapon, url, type, training }) => {
 
-  const {currentAccount,handleTrainingPrice} = useContext(TransactionContext)
+export const WeaponCard = ({
+  id,
+  price,
+  weapon,
+  url,
+  type,
+  training,
+  timestamp,
+  sale,
+  lastModified,
+  countTraining,
+  oldPrice,
+}) => {
+  const [forSale, setForSale] = useState(sale);
 
-  const handleTraining = (index,training,trainingObject) => {
+  const {
+    currentAccount,
+    handleTrainingPrice,
+    handleWeaponForSale,
+  } = useContext(TransactionContext);
+
+  const handleTraining = (index) => {
     const weaponAfterTraining = {
-      _id:id,
+      _id: id,
+      timestamp: timestamp,
       weapon_name: weapon,
       weapon_type: type,
       weapon_price: price,
       weapon_url: url,
-      weapon_training:trainingObject,
-      training_index:index,
-      account_metamask_address: currentAccount
+      weapon_training: training,
+      training_index: index,
+      last_modified: lastModified,
+      count: countTraining,
+      account_metamask_address: currentAccount,
+    };
+    handleTrainingPrice(weaponAfterTraining)
+
+  };
+
+  const handleForSale = async () => {
+    try {
+      setForSale(!forSale);
+      const weaponForSale = {
+        _id: id,
+        timestamp: timestamp,
+        weapon_name: weapon,
+        weapon_price: price,
+        weapon_type: type,
+        weapon_training: training,
+        weapon_url: url,
+        weapon_for_sale: !forSale,
+      };
+      await handleWeaponForSale(weaponForSale);
+    } catch (error) {
+      console.log(error);
     }
-    console.log(weaponAfterTraining);
-    handleTrainingPrice(weaponAfterTraining);
-
   };
 
-  const handleSend = () => {
-    console.log("test send");
-  };
+  const calcPercentage = () => {
+    let percentage = (price - oldPrice) / oldPrice * 100
+    if (Number.isInteger(percentage)) {
+      return percentage
+    }
+    percentage = percentage.toFixed(2)
+    const numnString = percentage.toString()
+    if (numnString.includes(".00")) return Number(percentage)
+    return percentage
+  }
+
+  const viewPrice=()=>{
+    var price_str = String(price.toFixed(6))
+    while(price_str[price_str.length-1] === '0'){
+      price_str = price_str.slice(0,price_str.length-1)
+    }
+    return Number(price_str)
+  }
 
   return (
-    <div
-      className="blue-glassmorphism m-4 flex flex-1
-      2xl:min-w-[450px]
-      2xl:max-w-[500px]
-      sm:min-w-[270px]
-      sm:max-w-[300px]
-      min-w-full
-      flex-col p-3 rounded-md hover:shadow-2xl"
-    >
-      <div className="flex flex-col items-center w-full mt-3">
-        <div className="display-flex justify-start w-full mb-2 p-2 text-white text-[16px]">
-          <p>Type: {type}</p>
-          <p>Name: {weapon}</p>
-          <div className="flex flex-row">
-            <p>Price: {price} ETH </p>
-            <FaEthereum className="mt-1" />
+    <motion.div animate={{opacity: 1,scale:1}} initial={{opacity: 0,scale:0}} exit={{opacity:0,scale:0}} layout className="max-w-sm rounded blue-glassmorphism overflow-hidden shadow-lg m-7 text-white">
+      <img
+        className="w-full h-48 rounded blue-glassmorphism"
+        src={url}
+        alt="weapon"
+      />
+
+      <div className="px-6 py-4">
+        <div className="flex justify-between font-bold text-xl mb-2">
+          <div className="px-2">
+          {weapon}
           </div>
-          <p>Training:</p>
+          <div>
+          <p className="flex">
+            {viewPrice()}
+            <FaEthereum className="mt-1 ml-1 text-pink-500" fontSize={20} />
+          </p>
+
+          </div>
         </div>
-        <div className="flex flex-col w-full text-[13px]">
-          {Object.keys(dictTraining).map(
-            (item, index) => (
-                <Button key={index} index={item} text={dictTraining[item]} trainingObject={training} onClick={handleTraining} />
-            )
-          )}
+        <div className="flex flex-col justify-center items-center w-full text-[13px]">
+          <p className="flex text-[18px] mb-1 font-semibold">
+            {price > oldPrice && (<span className="flex text-green-500">
+                  {`${calcPercentage()}%`}
+                  <VscTriangleUp className="mt-1 ml-1 text-green-500" fontSize={22} />
+                </span>) }
+                {price < oldPrice && (<span className="flex text-red-500">
+                  {`${calcPercentage()}%`}
+                  <VscTriangleDown className="mt-1 ml-1 text-red-500" fontSize={22} />
+                </span>)}
+          </p>
+          <span className="font-bold flex mb-1">
+            Last Modified:  <p className="px-2 font-semibold">{training.idle_time} Hours </p>
+          </span>
+          {countTraining < 3 ?
+
+            (<span className="font-bold flex mb-1">
+              Training Per Day:  <p className="px-2 font-semibold">{3 - countTraining}</p>
+            </span>)
+            :
+            (<span className="font-bold flex mb-1">
+              Training Per Day Limit Reached
+            </span>)
+          }
+          {Object.keys(dictTraining).map((item, index) => (
+            <Button
+              key={index}
+              number={training[item]}
+              index={item}
+              text={dictTraining[item]}
+              onClick={handleTraining}
+            />
+          ))}
         </div>
-        <img
-          src={url}
-          alt={"weapon"}
-          className="w-25 h-50 2xl:h-96 mb-2 rounded-md shadow-lg"
-        />
-        <Button text={"Send"} onClick={handleSend} />
+
       </div>
-    </div>
+      <StyledButton
+        text={forSale ? "Remove From Sale" : "Sell Weapon"}
+        onClick={handleForSale}
+      />
+    </motion.div>
   );
 };
