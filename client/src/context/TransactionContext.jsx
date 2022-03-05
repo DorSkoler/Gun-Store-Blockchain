@@ -4,8 +4,8 @@ import axios from "axios";
 import { contractABI, contractAddressABI, gunStoreAddress } from "../utils_contract/details";
 import trainingPrices from '../weapons/trainingPrices'
 
-// const addressRoute = "https://gun-store-blockchain.herokuapp.com/weapons"
-const addressRoute = "http://localhost:4000/weapons"
+const addressRoute = "https://gun-store-blockchain.herokuapp.com/weapons"
+// const addressRoute = "http://localhost:4000/weapons"
 
 export const TransactionContext = React.createContext();
 
@@ -50,7 +50,7 @@ export const TransactionProvider = ({ children }) => {
           //WEI to ETH 10^18
           amount: parseInt(ts.amount._hex) / (10 ** 18),
           weaponType: ts.weaponType,
-          weaponUrl: ts.weaponUrl
+          weaponUrl: ts.weaponUrl,
 
         }))
         setTransactions(newTsxData)
@@ -111,45 +111,57 @@ export const TransactionProvider = ({ children }) => {
       let idle_time = (Date.now() - new Date(weapon.last_modified).getTime())
       idle_time = Math.floor((idle_time / (1000 * 60 * 60)).toFixed(6))
 
-      let time_passed = (Date.now() - new Date(weapon.timestamp).getTime())
-      time_passed = Math.floor((time_passed / (1000 * 60 * 60)).toFixed(6))
-      
-      if ((time_passed / 24 + 1) * 3 > weapon.count) {
-        let newPrice = Number(weapon.weapon_price) + Number(trainingPrices[weapon.weapon_type][weapon.training_index])
-        newPrice = newPrice.toFixed(5)
+      if ((idle_time / 24 + 1) * 3 > weapon.count) {
+        const min_range = trainingPrices[weapon.weapon_type][weapon.training_index]["min_range"]
+        const max_range = trainingPrices[weapon.weapon_type][weapon.training_index]["max_range"]
+        const fee = trainingPrices[weapon.weapon_type][weapon.training_index]["fee"]
+        const range = (min_range +( (max_range-min_range)*Math.random())).toFixed(3)
+        //calculating new price with the corresponding training percentage with the relative fee for the price of the weapon
+        let newPrice = weapon.weapon_price + weapon.weapon_price * range - weapon.weapon_price*fee
         weapon.weapon_training["idle_time"] = 0
         weapon.weapon_training[weapon.training_index]++
-        await axios.post(`${addressRoute}/updatePrice`, { _id: weapon._id, weapon_price: newPrice, weapon_training: weapon.weapon_training, last_modified: Date.now() })
-      }
-      else {
-        console.log("can not add more training");
+        await axios.post(`${addressRoute}/updatePrice`, { _id: weapon._id, weapon_price: newPrice, weapon_training: weapon.weapon_training, last_modified: Date.now(),count_training:weapon.count + 1, old_price:weapon.weapon_price })
       }
       
-    } catch (error) {
-    }
-  }
-
-  const handleWeaponIdleTime = async (weapon) => {
-    try {
-      let idle_time = (Date.now() - new Date(weapon.last_modified).getTime())
-      idle_time = Math.floor((idle_time / (1000 * 60 * 60)).toFixed(6))
-      if (weapon.weapon_training["idle_time"] === idle_time) return
-      else {
-        weapon.weapon_training["idle_time"] = idle_time
-        let newPrice = weapon.weapon_price - idle_time * trainingPrices[weapon.weapon_type]["idle"]
-        newPrice = newPrice.toFixed(6)
-        if (newPrice <= 0) {
-          await axios.post(`${addressRoute}/delete`, { _id: weapon._id })
-          return
-        }
-        await axios.post(`${addressRoute}/idlePrice`, { _id: weapon._id,  weapon_training: weapon.weapon_training, weapon_price: newPrice })
-      }
     } catch (error) {
       console.log(error);
     }
   }
 
+  //async function for calculating the new price after idle time passed.
+  const handleWeaponIdleTime = async (weapon) => {
+    try {
+      //time passed since the last action for the weapon
+      let idle_time = (Date.now() - new Date(weapon.last_modified).getTime())
+      idle_time = Math.floor((idle_time / (1000 * 60 * 60)).toFixed(6))
+      
+      //if 24 hours has passed we reset the idle time and the training so user can train his weapon after one day.
+      if (weapon.weapon_training["idle_time"] >= 24) {
+        weapon.weapon_training["idle_time"] = 0
+        weapon.count = 0
+        weapon.last_modified = Date.now()
+        await axios.post(`${addressRoute}/updateCount`, { _id: weapon._id,  weapon_training: weapon.weapon_training, last_modified:weapon.last_modified, count_training:weapon.count })
+        return 
+      }
+      //if it is the same time passed we do not need to update anything.
+      if (weapon.weapon_training["idle_time"] === idle_time) return 
+      //
+      else {
+        weapon.weapon_training["idle_time"] = idle_time
+        let newPrice = weapon.weapon_price - idle_time * trainingPrices[weapon.weapon_type]["idle"]
+        if (newPrice <= 0) {
+          await axios.post(`${addressRoute}/delete`, { _id: weapon._id })
+          return 
+        }
+        await axios.post(`${addressRoute}/idlePrice`, { _id: weapon._id,  weapon_training: weapon.weapon_training, weapon_price: newPrice, count_training:weapon.count, old_price:weapon.weapon_price })
+      }
 
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //async function to be called when a user buying a new weapon from the store
   const handleNewTransaction = async (userWeapon) => {
     try {
       if (ethereum) {
@@ -195,7 +207,8 @@ export const TransactionProvider = ({ children }) => {
           userWeapon.url,
           lastWeaponAdded.data[0]._id,
         );
-
+        //wait for the transasction to be finished.
+        console.log(tsHash.hash);
         await tsHash.wait()
 
       }
@@ -204,6 +217,7 @@ export const TransactionProvider = ({ children }) => {
       }
 
     } catch (error) {
+      //getting the new weapon that just got added to the database in the 'try' section.
       const last = await axios.get(`${addressRoute}/getLastWeapon`)
       //delete the weapon from database incase of an error in the transaction.
       await axios.post(`${addressRoute}/delete`, { _id: last.data[0]._id })
@@ -212,14 +226,18 @@ export const TransactionProvider = ({ children }) => {
     }
   };
 
+  //async function to be called when the user is loggin in to his account so he can view his weapons
   const getAccountWeapons = async () => {
     try {
+      //api call to all account weapons from his metamask account address
       const res = await axios.post(`${addressRoute}/byMetamask`, { account_metamask_address: currentAccount })
+      //setting the account weapons array
       setAccountWeapons(res.data)
     } catch (error) {
       console.log(error);
     }
   }
+  //async function to be called when the user is in the 'for sale' page so we can view him all the weapons that is for sale.
   const getWeaponsForSale = async () => {
     try {
       const res = await axios.get(`${addressRoute}/getWeaponsForSale`)
@@ -228,6 +246,7 @@ export const TransactionProvider = ({ children }) => {
       console.log(error);
     }
   }
+  //async function to be called when the user is buying a weapon from other user in the 'for sale' page.
   const handleNewTransactionFromSale = async (weapon) => {
     try {
       if (!ethereum) return alert("Please connect to MetaMask.");
@@ -249,6 +268,7 @@ export const TransactionProvider = ({ children }) => {
           },
         ],
       });
+
       const tsHash = await tsxContract.addToBlockchain(
         weapon.account_metamask_address,
         ethers.utils.parseEther(String(weapon.weapon_price))._hex,
@@ -258,8 +278,10 @@ export const TransactionProvider = ({ children }) => {
         weapon._id
       );
       await tsHash.wait()
-
+      //updating the account address to the user who bought the weapon.
       await axios.post(`${addressRoute}/updateAddress`, { account_metamask_address: currentAccount, _id: weapon._id })
+      weapon.weapon_training["idle_time"] = 0
+      await axios.post(`${addressRoute}/updateCount`, { _id: weapon._id, weapon_training: weapon.weapon_training, last_modified: Date.now(), count_training: 0 })
 
     } catch (error) {
       console.log(error);
@@ -273,6 +295,7 @@ export const TransactionProvider = ({ children }) => {
   }, [currentAccount]);
 
   return (
+    //moving all the necessery states and functions to other components
     <TransactionContext.Provider
       value={{
         connectWallet,

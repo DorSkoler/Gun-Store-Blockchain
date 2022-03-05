@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import {StyledButton} from './StyledButton'
 import { TransactionContext } from "../context/TransactionContext";
 import Loading from "./Loading";
+import { motion } from "framer-motion";
 
 export const WeaponCardForSale = ({
   id,
@@ -28,6 +29,7 @@ export const WeaponCardForSale = ({
         weapon_url: url,
         weapon_type: type,
         weapon_name: weapon,
+        weapon_training:training
       };
       setIsLoading(true);
       await handleNewTransactionFromSale(weaponTransaction);
@@ -37,9 +39,17 @@ export const WeaponCardForSale = ({
     }
   };
 
+  const viewPrice=()=>{
+    var price_str = String(price.toFixed(6))
+    while(price_str[price_str.length-1] === '0'){
+      price_str = price_str.slice(0,price_str.length-1)
+    }
+    return Number(price_str)
+  }
+
   useEffect(() => {}, [isLoading]);
   return (
-    <div className="max-w-sm rounded blue-glassmorphism overflow-hidden shadow-lg m-7 text-white">
+    <motion.div animate={{opacity: 1,scale:1}} initial={{opacity: 0,scale:0}} exit={{opacity:0,scale:0}} layout className="max-w-sm rounded blue-glassmorphism overflow-hidden shadow-lg m-7 text-white">
       <img
         className="w-full h-48 rounded blue-glassmorphism"
         src={url}
@@ -74,9 +84,9 @@ export const WeaponCardForSale = ({
         isLoading ? (
           <Loading />
         ) : (
-          <StyledButton text={price} onClick={handlePurchase} />
+          <StyledButton text={viewPrice()} onClick={handlePurchase} />
         )
       }
-    </div>
+    </motion.div>
   );
 };

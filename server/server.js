@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 require('dotenv').config()
 const PORT = process.env.PORT || 4000;
 const app = express();
-// const Schemas = require('../models/schemas')
+
+
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(cors())
@@ -20,6 +21,7 @@ mongoose.connect(process.env.DB_URI, {useNewUrlParser:true,useUnifiedTopology:tr
     console.log(err);
 })
 
+//define the route for our weapon database
 const weaponsRouter = require('./routes/weapons')
 
 app.use('/weapons',weaponsRouter)
