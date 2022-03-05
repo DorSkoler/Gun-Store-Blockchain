@@ -111,8 +111,4 @@ router.route('/delete').post(async (req, res) => {
     res.json("Deleted")
 })
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 36c8b0444cd2e761b46e16f78d5b05f50dc67a3f
 module.exports = router
